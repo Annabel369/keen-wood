@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Creeper Secure Login</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsSHA/2.4.2/sha1.js"></script>
+    <style>
+        body { background-color: #0a0a0a; color: #00FF00; font-family: 'Courier New', monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-card { border: 2px solid #00FF00; padding: 40px; background: #111; border-radius: 15px; box-shadow: 0 0 20px rgba(0,255,0,0.4); text-align: center; width: 350px; }
+        h2 { letter-spacing: 3px; margin-bottom: 20px; }
+        input { background: #000; border: 1px solid #00FF00; color: #00FF00; padding: 12px; margin: 10px 0; width: 100%; box-sizing: border-box; font-size: 18px; text-align: center; outline: none; }
+        input:focus { box-shadow: 0 0 10px #00FF00; }
+        button { background: #00FF00; color: #000; border: none; padding: 15px 20px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; transition: 0.3s; }
+        button:hover { background: #00cc00; transform: scale(1.02); }
+        .status { margin-top: 20px; font-size: 14px; min-height: 20px; }
+        .info { color: #444; font-size: 10px; margin-top: 20px; word-break: break-all; }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <h2>MINECRAFT AUTH</h2>
+    
+    <input type="password" id="pass" placeholder="SENHA (ADMIN)">
+    <input type="text" id="2fa" placeholder="CÓDIGO DO CREEPER" maxlength="6" autocomplete="off">
+    
+    <button onclick="verificarLogin()">ENTRAR NO SISTEMA</button>
+    
+    <div id="status" class="status"></div>
+    
+    <div class="info">
+        CHAVE ATIVA: Q9HM 7Z2K L4VT N8RJ P3WY D6AE BZQ5 X1TC
+    </div>
+</div>
+
+<script>
+    // CHAVE ATUALIZADA (Sempre em Maiúsculas e sem espaços)
+    const secretBase32 = "Q9HM7Z2KL4VTN8RJP3WYD6AEBZQ5X1TC"; 
+
+    function base32tohex(base32) {
+        let base32chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+        let bits = "", hex = "";
+        base32 = base32.replace(/\s/g, "").toUpperCase();
+        for (let i = 0; i < base32.length; i++) {
+            let val = base32chars.indexOf(base32.charAt(i));
+            if (val === -1) continue;
+            bits += val.toString(2).padStart(5, '0');
+        }
+        for (let i = 0; i + 4 <= bits.length; i += 4) {
+            hex += parseInt(bits.substr(i, 4), 2).toString(16);
+        }
+        return hex;
+    }
+
+    function getTOTP(segundos) {
+        let time = Math.floor(segundos / 30).toString(16).padStart(16, '0');
+        let key = base32tohex(secretBase32);
+        let shaObj = new jsSHA("SHA-1", "HEX");
+        shaObj.setHMACKey(key, "HEX");
+        shaObj.update(time);
+        let hmac = shaObj.getHMAC("HEX");
+        let offset = parseInt(hmac.substring(hmac.length - 1), 16);
+        let otp = (parseInt(hmac.substr(offset * 2, 8), 16) & 0x7fffffff) + '';
+        otp = otp.substr(otp.length - 6, 6);
+        return otp.padStart(6, '0');
+    }
+
+    function verificarLogin() {
+        const input2fa = document.getElementById('2fa').value;
+        const senha = document.getElementById('pass').value;
+        const status = document.getElementById('status');
+        
+        // 1. Verifica Senha Mestra
+        if(senha !== "admin") {
+            status.innerText = "❌ SENHA INCORRETA";
+            status.style.color = "#ff4444";
+            return;
+        }
+
+        // 2. Verifica Token com Janela de Tempo (Tolerância de 30s para mais ou para menos)
+        let agora = Math.floor(new Date().getTime() / 1000);
+        
+        let tokenAnterior = getTOTP(agora - 30);
+        let tokenAtual    = getTOTP(agora);
+        let tokenProximo  = getTOTP(agora + 30);
+
+        if(input2fa === tokenAtual || input2fa === tokenAnterior || input2fa === tokenProximo) {
+            status.innerText = "✅ ACESSO CONCEDIDO! BEM-VINDO.";
+            status.style.color = "#00FF00";
+            status.style.textShadow = "0 0 10px #00FF00";
+        } else {
+            status.innerText = "❌ TOKEN INVÁLIDO OU EXPIRADO";
+            status.style.color = "#ff4444";
+            console.log("Tokens esperados pelo PC:", [tokenAnterior, tokenAtual, tokenProximo]);
+        }
+    }
+</script>
+
+</body>
+</html>

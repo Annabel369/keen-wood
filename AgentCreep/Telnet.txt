@@ -1,0 +1,49 @@
+ssh -o HostKeyAlgorithms=+ssh-rsa telecomadmin@192.168.100.1
+
+root
+admin
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++                ver ip e ipv6                       +++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+display ip neigh
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++            ver nomes de dispositivos e MAC         +++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+display dhcp server user all
+
+
+
+Como o fluxo está funcionando agora:
+
+Aqui está a sequência que o seu terminal vai exibir:
+
+    18:22:53: Creeper (id=-1) -> Rosto verde no TFT.
+
+    18:27:53: WiFi QR Code (id=-2) -> QR Code para conectar na rede "Maria Cristina 4G".
+
+    18:32:53: PIX QR Code (id=-3) -> QR Code com a sua chave PIX e o logo do porco.
+
+    18:37:53: Meteorologia (id=-4) -> Temperatura e vento de Bom Jesus dos Perdões.
+
+Dicas para Monitoramento no Debian:
+
+    Rodar em Background: Se você quiser fechar o terminal e deixar o script rodando, use o comando nohup:
+    Bash
+
+nohup python3 creeper.py &
+
+Verificar Logs: Se rodar com nohup, você pode ver o que está acontecendo com:
+Bash
+
+tail -f nohup.out
+
+Parar o Script: Se precisar parar a alternância, use:
+Bash
+
+    pkill -f creeper.py

@@ -1,0 +1,30 @@
+// Adicione isso ao topo do seu código .ino
+#include <WiFiUdp.h>
+
+WiFiUDP udp;
+unsigned int localUdpPort = 1234; 
+char incomingPacket[1024]; 
+
+void setup() {
+  // ... seu setup existente (WiFi, LCD, etc)
+  udp.begin(localUdpPort);
+}
+
+void loop() {
+  // ... sua lógica de TOTP/2FA existente
+
+  // NOVA LÓGICA: Verifica se o Python enviou a lista de IPs/MACs
+  int packetSize = udp.parsePacket();
+  if (packetSize) {
+    int len = udp.read(incomingPacket, 1023);
+    if (len > 0) incomingPacket[len] = 0;
+    
+    // Aqui o incomingPacket contém a lista de IPs que seu Python enviou
+    Serial.printf("Whitelist recebida: %s\n", incomingPacket);
+    
+    // Exemplo: Se o IP do seu PC estiver na lista, acende um LED de "Rede Segura"
+    if (strstr(incomingPacket, "192.168.100.170")) {
+       digitalWrite(LED_PIN, HIGH); 
+    }
+  }
+}

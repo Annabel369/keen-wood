@@ -1,0 +1,12 @@
+{
+    "dispositivos": [
+        {
+            "nome": "PC-PRINCIPAL",
+            "mac": "00-00-00-00-00-00"
+        },
+        {
+            "nome": "PC-MICKEY",
+            "mac": "00-00-00-00-00-00"
+        }
+    ]
+}
