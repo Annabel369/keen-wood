@@ -1,4 +1,5 @@
-![Uploading Gemini_Generated_Image_291gjv291gjv291g.png…]()
+<img width="1952" height="2172" alt="Gemini_Generated_Image_291gjv291gjv291g" src="https://github.com/user-attachments/assets/ab7c8556-62e1-490c-889f-321f204d4294" />
+
   ## 🎨 KenWoody, O Príncipe
 
   Pixel art desenhado combinando:
